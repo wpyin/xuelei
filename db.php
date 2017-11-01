@@ -1,31 +1,36 @@
 <?php
-	require dirname(__FILE__)."/dbconfig.php";//引入配置文件
-
+	//require dirname(__FILE__)."/dbconfig.php";
+     require_once("./dbconfig.php"); 
 class db{
 	public $conn =null;
 
 	public function __construct($config){
-		$conn=mysql_connect($config['host'],$config['username'],$config['password']) or die(mysql_error());
-		mysql_select_db($config['database'],$conn) or die(mysql_error());
-		mysql_query("set names".$config['charset']) or die(mysql_error());
-
+		$this->conn = mysql_connect($config['host'],$config['username'],$config['password']);
+		mysql_select_db($config['database'],$this->conn);
+		//mysql_query("set names".$config['charset']); 此种学法有待商量
+		mysql_query("set names utf8");
+		
 	}
 	//根据传入的sql语句 查询mysql结果集
 	public function getResult($sql){
-		$resource=mysql_query($sql,$conn) or die(mysql_error());
-		$res=array();
-		while (($row=mysql_fetch_assoc($resource))!=false) {
-			$res[]=$row;
+		$resource = mysql_query($sql,$this->conn);
+		$arr=array();
+		while ($row = mysql_fetch_assoc($resource)) {
+			$arr[]=$row;
 		}
-		return $res;
+	   //print_r($arr);die;
+		return $arr;
 	}
 
-	public function getDataByWeek(){
-		$sql="select ID,XINGMING,ROOM,CLASS from kecheng where WEEK=".$week." order by CLASS";
+	public function getDataByWeek($jieci){
+		$sql="select * from kebiao where jieci='$jieci'";
 		$res=self::getResult($sql);
+
 		return $res;
 	} 
 
 }
+//上面是时学磊 用类的方法实现调用数据库
+
 
 ?>
